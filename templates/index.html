@@ -8,10 +8,10 @@
 <p>Available devices</p>
 <ul class="list-group">
     {% for item in data %}
-    <li href={{ item[0] }} class="list-group-item list-group-item-action">{{ item[0] }}
+    <li class="list-group-item list-group-item-action">{{ item[0] }}
         <span class="list-group-item list-group-item-secondary">Partitions:</span>
         {% for partition in item[1] %}
-            <span class="list-group-item">{{ partition }}</span>
+            <a href="partition/{{ partition[0] }}" class="list-group-item">{{ partition[1] }}</a>
         {% endfor %}
     </li>
     {% endfor %}

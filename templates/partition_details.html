@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+<h4 xmlns="http://www.w3.org/1999/html">{{ data[0] }}</h4>
+<p>{{ data[1] }}</p>
+
+<!--<h5>Data types to extract</h5>-->
+<form method="post">
+<!--  <div class="form-check">-->
+<!--    <input class="form-check-input" type="checkbox" value="domain.txt" name="types">-->
+<!--    <label class="form-check-label">Domains</label>-->
+<!--  </div>-->
+<!--  <div class="form-check">-->
+<!--    <input class="form-check-input" type="checkbox" value="email.txt" name="types">-->
+<!--    <label class="form-check-label">E-mails</label>-->
+<!--  </div>-->
+<!--  <div class="form-check">-->
+<!--    <input class="form-check-input" type="checkbox" value="ip.txt" name="types">-->
+<!--    <label class="form-check-label">IP addresses</label>-->
+<!--  </div>-->
+<!--  <div class="form-check">-->
+<!--    <input class="form-check-input" type="checkbox" value="url.txt" name="types">-->
+<!--    <label class="form-check-label">URLs</label>-->
+<!--  </div>-->
+<!--  <div class="form-check">-->
+<!--    <input class="form-check-input" type="checkbox" value="ccn.txt" name="types">-->
+<!--    <label class="form-check-label">Credit card numbers</label>-->
+<!--  </div>-->
+<!--  <br>-->
+  <input type="submit" name="submit-button" value="Extract data" class="btn btn-primary">
+</form>
+{% endblock %}

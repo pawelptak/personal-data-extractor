@@ -16,6 +16,7 @@ def get_disk_info():
             disk_lines.append(line_number)
 
     disk_info = []
+    partition_id = 0
     for i in range(len(disk_lines)):
         name_with_prefix = output[disk_lines[i]]
         disk_name = name_with_prefix[len(prefix):]
@@ -29,7 +30,8 @@ def get_disk_info():
             partition_index = output[j].find('/dev/')
             if partition_index >= 0:
                 partition_name = output[j].split()[0]
-                partition_names.append(partition_name)
+                partition_names.append([partition_id, partition_name])
+                partition_id += 1
         disk_info.append([disk_name, partition_names])
     print(disk_info)
     return disk_info
@@ -79,6 +81,15 @@ def bulk_extractor_data_to_csv(data_dir_path: str, files=None):
                     for item in unique_extracted:
                         writer.writerow([item])
 
+def get_partition_size(partition_path: str):
+    command = f"fdisk -l {partition_path}"
+    print(f"{partition_path}: getting partition info...")
+    output = os.popen(f'echo {sudoPassword} | sudo -S %s' % (command)).read()
+    output = output.splitlines()
+    size = output[0][output[0].find(':') + 2:output[0].find(',')]
+    return size
+
 if __name__ == "__main__":
     # create_disk_img('/dev/sdb1')
-    # bulk_extractor_data_to_csv('../extracted_data/sdb1')
+    #bulk_extractor_data_to_csv('../extracted_data/sdb1')
+    pass
