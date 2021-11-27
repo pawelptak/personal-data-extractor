@@ -1,5 +1,5 @@
 import os
-
+import csv
 sudoPassword = 'kali'
 
 
@@ -45,8 +45,40 @@ def create_disk_img(partition_path : str, output_path: str = '../disk_images'):
 
 
 def bulk_extractor(image_file_path: str, output_directory: str = '../extracted_data'):
-    file_name = os.path.basename(image_file_path)
-    command = f"bulk-extractor -R -o {output_directory}/{file_name} {image_file_path}"
+    file_name = os.path.basename(image_file_path).split('.')[0]
+    command = f"bulk_extractor -R -o {output_directory}/{file_name} {image_file_path}"
     print(f'Bulk-extractor: extracting data from {image_file_path}')
     output = os.popen(f'echo {sudoPassword} | sudo -S %s' % (command)).read()
     print('Bulk-extractor: Data extracted.')
+
+def bulk_extractor_data_to_csv(data_dir_path: str, files=None):
+    dir_name = os.path.basename(data_dir_path).split('.')[0]
+
+    if files is None:
+        # files = ['domain.txt', 'email.txt', 'ip.txt', 'telephone.txt', 'url.txt', 'ccn.txt']
+        files = ['domain.txt', 'email.txt', 'ip.txt', 'url.txt', 'ccn.txt']
+
+    for file_name in os.listdir(data_dir_path):
+        file_path = os.path.join(data_dir_path, file_name)
+        if file_name in files:
+            extracted = []
+            if os.path.getsize(file_path) > 0:
+                with open(file_path) as file:
+                    for line in file:
+                        if not line.startswith('#'):
+                            parts = line.split()
+                            if len(parts) > 1:
+                                extracted.append(parts[1])
+
+                output_dir_name = '../extracted_data/' + dir_name + '_csv'
+                if not os.path.isdir(output_dir_name):
+                    os.mkdir(output_dir_name)
+                with open(os.path.join(output_dir_name, file_name.split('.')[0] + '.csv'), 'w', newline='') as csv_file:
+                    writer = csv.writer(csv_file)
+                    unique_extracted = set(extracted)
+                    for item in unique_extracted:
+                        writer.writerow([item])
+
+if __name__ == "__main__":
+    # create_disk_img('/dev/sdb1')
+    # bulk_extractor_data_to_csv('../extracted_data/sdb1')
