@@ -149,3 +149,6 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+
+# created disk images
+/disk_images/

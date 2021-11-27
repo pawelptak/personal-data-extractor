@@ -2,8 +2,9 @@ import os
 
 sudoPassword = 'kali'
 
+
 def get_disk_info():
-    command =  'fdisk -l'
+    command = 'fdisk -l'
     print('Getting disk info')
     output = os.popen(f'echo {sudoPassword} | sudo -S %s'%(command)).read()
     # print(output)
@@ -33,8 +34,11 @@ def get_disk_info():
     print(disk_info)
     return disk_info
 
-def create_disk_img(partition_path : str):
-    file_name = os.path.basename(partition_path)
-    command = f'dd if={partition_path} if={file_name}'
-    output = os.popen('sudo -S %s' % (command)).read()
 
+def create_disk_img(partition_path : str, output_path: str = '../disk_images'):
+    file_name = os.path.basename(partition_path)
+    command = f"dd if={partition_path} of={output_path}/{file_name}.img"
+    print(f'Creating image of partition {file_name}...')
+    output = os.popen(f'echo {sudoPassword} | sudo -S %s' % (command)).read()
+    print('Image created.')
+    return output
