@@ -42,3 +42,11 @@ def create_disk_img(partition_path : str, output_path: str = '../disk_images'):
     output = os.popen(f'echo {sudoPassword} | sudo -S %s' % (command)).read()
     print('Image created.')
     return output
+
+
+def bulk_extractor(image_file_path: str, output_directory: str = '../extracted_data'):
+    file_name = os.path.basename(image_file_path)
+    command = f"bulk-extractor -R -o {output_directory}/{file_name} {image_file_path}"
+    print(f'Bulk-extractor: extracting data from {image_file_path}')
+    output = os.popen(f'echo {sudoPassword} | sudo -S %s' % (command)).read()
+    print('Bulk-extractor: Data extracted.')
