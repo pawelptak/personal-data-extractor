@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from scripts.get_disk_info import get_disk_info
+from scripts.disk_scripts import get_disk_info
 
 app = Flask(__name__)
 
