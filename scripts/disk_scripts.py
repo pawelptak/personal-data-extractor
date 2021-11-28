@@ -77,7 +77,7 @@ def bulk_extractor_data_to_csv(data_dir_path: str, files=None):
                     os.mkdir(output_dir_name)
 
                 if file_name == 'telephone_histogram.txt':
-                    output_filename = file_name[:file_name.find('_')]
+                    output_filename = file_name[:file_name.find('_')] + '_csv'
                 else:
                     output_filename = file_name.split('.')[0] + '.csv'
                 with open(os.path.join(output_dir_name, output_filename), 'w', newline='') as csv_file:
@@ -142,7 +142,7 @@ def remove_data(partition_name: str, data_dir_path: str = '../extracted_data', i
 
 if __name__ == "__main__":
     # create_disk_img('/dev/sdb1')
-    # bulk_extractor('../disk_images/sdb1.img')
+    #bulk_extractor('../disk_images/sdb1.img')
     # bulk_extractor_data_to_csv('../extracted_data/sdb1')
     # get_bulk_csv_data('../extracted_data/sdb1_csv')
     # get_bulk_all_data()
