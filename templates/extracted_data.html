@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+<h4>Extracted data</h4>
+
+{% for item in data %}
+<div class="card">
+  <h5 class="card-header" data-bs-toggle="collapse" href="#{{ item[0] }}" role="button" aria-expanded="false" aria-controls="collapseExample">
+    <!--partition name-->
+      {{ item[0] }}
+  </h5>
+</div>
+<div class="collapse" id="{{ item[0] }}">
+  <div class="card card-body">
+      <!--items = ['name', ['content1', 'content2', ...]]-->
+      {% for items in item[1] %}
+
+        <div class="card">
+          <h5 class="card-header" data-bs-toggle="collapse" href="#{{ items[0] }}" role="button" aria-expanded="false" aria-controls="collapseExample">
+            {{ items[0] }}: <b>{{ items[1]|length }}</b>
+          </h5>
+            <div class="collapse" id="{{ items[0] }}">
+                <div class="card card-body">
+                    {% for dat in items[1] %}
+                        <ul class="list-group list-group-flush">
+                          <li class="list-group-item">{{ dat }}</li>
+                        </ul>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+      {% endfor %}
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}

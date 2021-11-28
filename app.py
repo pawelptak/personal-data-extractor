@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, request, redirect
-from scripts.disk_scripts import get_disk_info, get_partition_size, create_disk_img, bulk_extractor
+from scripts.disk_scripts import get_disk_info, get_partition_size, create_disk_img, bulk_extractor, bulk_extractor_data_to_csv, get_bulk_all_data
 
 app = Flask(__name__)
 
@@ -24,11 +24,16 @@ def show_disk_info(id):
             # checked_boxes = request.form.getlist('types')
             create_disk_img(partition_path=partition_name, output_path='./disk_images')
             bulk_extractor(image_file_path=f'./disk_images/{os.path.basename(partition_name)}.img', output_directory='./extracted_data')
-            return redirect("/")
-
-
+            bulk_extractor_data_to_csv(data_dir_path=f'./extracted_data/{os.path.basename(partition_name)}')
+            return redirect("/extracted")
 
     return render_template('partition_details.html', data=partition_details)
+
+@app.route("/extracted")
+def show_extracted():
+    extracted_data = get_bulk_all_data(data_dir_path='./extracted_data')
+    print(extracted_data[0][1])
+    return render_template('extracted_data.html', data=extracted_data)
 
 def extraction_btn_listener():
     if request.form.get('submit-button'):

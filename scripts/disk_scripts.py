@@ -1,7 +1,8 @@
 import os
 import csv
 sudoPassword = 'kali'
-
+import pandas as pd
+import numpy as np
 
 def get_disk_info():
     command = 'fdisk -l'
@@ -54,17 +55,17 @@ def bulk_extractor(image_file_path: str, output_directory: str = '../extracted_d
     print('Bulk-extractor: Data extracted.')
 
 def bulk_extractor_data_to_csv(data_dir_path: str, files=None):
-    dir_name = os.path.basename(data_dir_path).split('.')[0]
-
+    dir_name = os.path.basename(data_dir_path)
     if files is None:
         # files = ['domain.txt', 'email.txt', 'ip.txt', 'telephone.txt', 'url.txt', 'ccn.txt']
         files = ['domain.txt', 'email.txt', 'ip.txt', 'url.txt', 'ccn.txt']
 
+    print(f"Converting {data_dir_path} to csv...")
     for file_name in os.listdir(data_dir_path):
         file_path = os.path.join(data_dir_path, file_name)
         if file_name in files:
-            extracted = []
             if os.path.getsize(file_path) > 0:
+                extracted = []
                 with open(file_path) as file:
                     for line in file:
                         if not line.startswith('#'):
@@ -72,24 +73,56 @@ def bulk_extractor_data_to_csv(data_dir_path: str, files=None):
                             if len(parts) > 1:
                                 extracted.append(parts[1])
 
-                output_dir_name = '../extracted_data/' + dir_name + '_csv'
+                output_dir_name = data_dir_path + '_csv'
                 if not os.path.isdir(output_dir_name):
                     os.mkdir(output_dir_name)
+
                 with open(os.path.join(output_dir_name, file_name.split('.')[0] + '.csv'), 'w', newline='') as csv_file:
                     writer = csv.writer(csv_file)
                     unique_extracted = set(extracted)
                     for item in unique_extracted:
                         writer.writerow([item])
 
+    print(f"Converting {data_dir_path} to csv - done.")
+
+
 def get_partition_size(partition_path: str):
     command = f"fdisk -l {partition_path}"
-    print(f"{partition_path}: getting partition info...")
     output = os.popen(f'echo {sudoPassword} | sudo -S %s' % (command)).read()
     output = output.splitlines()
     size = output[0][output[0].find(':') + 2:output[0].find(',')]
     return size
 
+
+# get data from one partition
+def get_bulk_partiton_data(data_dir_path: str):
+    all_data = []
+    for file_name in os.listdir(data_dir_path):
+        file_path = os.path.join(data_dir_path, file_name)
+        current_data = []
+        with open(file_path, newline='') as csv_file:
+            reader = csv.reader(csv_file)
+            for row in reader:
+                current_data.append(row[0])
+        all_data.append([file_name.split('.')[0], current_data])
+    print(all_data)
+    return all_data
+
+
+# get data from all partitions
+def get_bulk_all_data(data_dir_path: str = '../extracted_data'):
+    all_partition_data = []
+    for i, dir_name in enumerate(os.listdir(data_dir_path)):
+        if dir_name.endswith('_csv'):
+            dir_path = os.path.join(data_dir_path, dir_name)
+            all_partition_data.append([dir_name[:dir_name.find('_')], get_bulk_partiton_data(dir_path)])
+    return all_partition_data
+
+
 if __name__ == "__main__":
     # create_disk_img('/dev/sdb1')
-    #bulk_extractor_data_to_csv('../extracted_data/sdb1')
+    # bulk_extractor('../disk_images/sdb1.img')
+    # bulk_extractor_data_to_csv('../extracted_data/sdb1')
+    # get_bulk_csv_data('../extracted_data/sdb1_csv')
+    get_bulk_all_data()
     pass
