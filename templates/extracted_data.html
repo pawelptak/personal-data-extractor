@@ -6,12 +6,16 @@
 
 {% block body %}
 <h4>Extracted data</h4>
-
+<form method="post">
 {% for item in data %}
 <div class="card">
   <h5 class="card-header" data-bs-toggle="collapse" href="#{{ item[0] }}" role="button" aria-expanded="false" aria-controls="collapseExample">
-    <!--partition name-->
-      {{ item[0] }}
+
+      <div class="d-flex justify-content-between">
+            <!--partition name-->
+            {{ item[0] }}
+          <input type="submit" name="delbtn-{{ item[0] }}" value="Delete data" class="btn btn-sm btn-danger">
+      </div>
   </h5>
 </div>
 <div class="collapse" id="{{ item[0] }}">
@@ -37,6 +41,7 @@
       {% endfor %}
   </div>
 </div>
+</form>
 {% endfor %}
 
 {% endblock %}

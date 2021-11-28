@@ -57,7 +57,6 @@ def bulk_extractor(image_file_path: str, output_directory: str = '../extracted_d
 
 def bulk_extractor_data_to_csv(data_dir_path: str, files=None):
     if files is None:
-        # files = ['domain.txt', 'email.txt', 'ip.txt', 'telephone.txt', 'url.txt', 'ccn.txt']
         files = ['domain.txt', 'email.txt', 'ip.txt', 'url.txt', 'ccn.txt', 'telephone_histogram.txt']
 
     print(f"Converting {data_dir_path} to csv...")
@@ -77,7 +76,11 @@ def bulk_extractor_data_to_csv(data_dir_path: str, files=None):
                 if not os.path.isdir(output_dir_name):
                     os.mkdir(output_dir_name)
 
-                with open(os.path.join(output_dir_name, file_name.split('.')[0] + '.csv'), 'w', newline='') as csv_file:
+                if file_name == 'telephone_histogram.txt':
+                    output_filename = file_name[:file_name.find('_')]
+                else:
+                    output_filename = file_name.split('.')[0] + '.csv'
+                with open(os.path.join(output_dir_name, output_filename), 'w', newline='') as csv_file:
                     writer = csv.writer(csv_file)
                     unique_extracted = set(extracted)
                     for item in unique_extracted:
@@ -143,5 +146,5 @@ if __name__ == "__main__":
     # bulk_extractor_data_to_csv('../extracted_data/sdb1')
     # get_bulk_csv_data('../extracted_data/sdb1_csv')
     # get_bulk_all_data()
-    remove_data(partition_name='sdb1')
+    # remove_data(partition_name='sdb1')
     pass

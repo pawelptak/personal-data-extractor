@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, request, redirect
-from scripts.disk_scripts import get_disk_info, get_partition_size, create_disk_img, bulk_extractor, bulk_extractor_data_to_csv, get_bulk_all_data
+from scripts.disk_scripts import get_disk_info, get_partition_size, create_disk_img, bulk_extractor, bulk_extractor_data_to_csv, get_bulk_all_data, remove_data
 
 app = Flask(__name__)
 
@@ -29,10 +29,16 @@ def show_disk_info(id):
 
     return render_template('partition_details.html', data=partition_details)
 
-@app.route("/extracted")
+@app.route("/extracted", methods=['GET', 'POST'])
 def show_extracted():
     extracted_data = get_bulk_all_data(data_dir_path='./extracted_data')
-    print(extracted_data[0][1])
+
+    if request.method == "POST":
+        for key in request.form:
+            if key.startswith('delbtn-'):
+                partition_name = key.partition('-')[-1]
+                remove_data(partition_name=partition_name, data_dir_path='./extracted_data', img_dir_path='./disk_images')
+
     return render_template('extracted_data.html', data=extracted_data)
 
 def extraction_btn_listener():
