@@ -54,11 +54,11 @@ def bulk_extractor(image_file_path: str, output_directory: str = '../extracted_d
     output = os.popen(f'echo {sudoPassword} | sudo -S %s' % (command)).read()
     print('Bulk-extractor: Data extracted.')
 
+
 def bulk_extractor_data_to_csv(data_dir_path: str, files=None):
-    dir_name = os.path.basename(data_dir_path)
     if files is None:
         # files = ['domain.txt', 'email.txt', 'ip.txt', 'telephone.txt', 'url.txt', 'ccn.txt']
-        files = ['domain.txt', 'email.txt', 'ip.txt', 'url.txt', 'ccn.txt']
+        files = ['domain.txt', 'email.txt', 'ip.txt', 'url.txt', 'ccn.txt', 'telephone_histogram.txt']
 
     print(f"Converting {data_dir_path} to csv...")
     for file_name in os.listdir(data_dir_path):
@@ -119,10 +119,29 @@ def get_bulk_all_data(data_dir_path: str = '../extracted_data'):
     return all_partition_data
 
 
+def remove_data(partition_name: str, data_dir_path: str = '../extracted_data', img_dir_path: str = '../disk_images'):
+    for dir_name in os.listdir(data_dir_path):
+        dir_path = os.path.join(data_dir_path, dir_name)
+        if dir_name.startswith(partition_name):
+            command = f"rm -r {dir_path}/*"
+            print(f'Deleting all contents of {dir_path}')
+            os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
+
+            command = f"rm -d {dir_path}"
+            os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
+
+    for file_name in os.listdir(img_dir_path):
+        file_path = os.path.join(img_dir_path, file_name)
+        if file_name.startswith(partition_name):
+            command = f"rm {file_path}"
+            print(f'Deleting image {file_path}')
+            os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
+
 if __name__ == "__main__":
     # create_disk_img('/dev/sdb1')
     # bulk_extractor('../disk_images/sdb1.img')
     # bulk_extractor_data_to_csv('../extracted_data/sdb1')
     # get_bulk_csv_data('../extracted_data/sdb1_csv')
-    get_bulk_all_data()
+    # get_bulk_all_data()
+    remove_data(partition_name='sdb1')
     pass
