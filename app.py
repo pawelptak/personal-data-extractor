@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello_world():
+    disks_info = get_disk_info()
     return render_template('index.html', data=disks_info)
 
 @app.route("/partition/<id>", methods=['GET', 'POST'])
@@ -46,5 +47,4 @@ def extraction_btn_listener():
         print('hello')
 
 if __name__ == '__main__':
-    disks_info = get_disk_info()
     app.run(debug=True)
