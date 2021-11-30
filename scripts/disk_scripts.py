@@ -45,10 +45,10 @@ def create_disk_img(partition_path : str, output_path: str = '../disk_images'):
     return output
 
 
-def bulk_extractor(image_file_path: str, output_directory: str = '../extracted_data'):
-    file_name = os.path.basename(image_file_path).split('.')[0]
-    command = f"bulk_extractor -R -o {output_directory}/{file_name} {image_file_path}"
-    print(f'Bulk-extractor: extracting data from {image_file_path}')
+def bulk_extractor(image_path: str, output_directory: str = '../extracted_data'):
+    file_name = os.path.basename(image_path).split('.')[0]
+    command = f"bulk_extractor -R -o {output_directory}/{file_name} {image_path}"
+    print(f'Bulk-extractor: extracting data from {image_path}')
     output = os.popen(f'echo {sudoPassword} | sudo -S %s' % (command)).read()
     print('Bulk-extractor: Data extracted.')
 
@@ -140,9 +140,10 @@ def remove_data(partition_name: str, data_dir_path: str = '../extracted_data', i
 
 if __name__ == "__main__":
     # create_disk_img('/dev/sdb1')
-    #bulk_extractor('../disk_images/sdb1.img')
+    # bulk_extractor('../disk_images/sdb1.img')
     # bulk_extractor_data_to_csv('../extracted_data/sdb1')
     # get_bulk_csv_data('../extracted_data/sdb1_csv')
     # get_bulk_all_data()
-    # remove_data(partition_name='sdb1')
+    # remove_data(partition_name='sdc1')
+    # bulk_extractor(image_path='/dev/sdc1')
     pass
