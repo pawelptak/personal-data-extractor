@@ -68,7 +68,11 @@ def bulk_extractor_data_to_csv(data_dir_path: str, files=None):
                         if not line.startswith('#'):
                             parts = line.split()
                             if len(parts) > 1:
-                                extracted.append(parts[1])
+                                if file_name == 'url.txt':  # fix for too long texts in url file
+                                    if len(parts) < 100:
+                                        extracted.append(parts[1])
+                                else:
+                                    extracted.append(parts[1])
 
                 output_dir_name = data_dir_path + '_csv'
                 if not os.path.isdir(output_dir_name):
