@@ -3,7 +3,6 @@ from flask import Flask, render_template, request, redirect
 from scripts.disk_scripts import get_disk_info, get_partition_size, create_disk_img, bulk_extractor, bulk_extractor_data_to_csv, get_bulk_all_data, remove_data
 
 app = Flask(__name__)
-disks_info = []
 
 @app.route("/")
 def hello_world():
@@ -12,6 +11,7 @@ def hello_world():
 
 @app.route("/partition/<id>", methods=['GET', 'POST'])
 def show_disk_info(id):
+    disks_info = get_disk_info()
     partition_details = []
     partition_name = ''
     for disk in disks_info:
