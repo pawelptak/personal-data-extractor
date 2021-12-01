@@ -24,8 +24,8 @@ def show_disk_info(id):
     if request.method == "POST":
         if request.form.get('submit-button'):
             # checked_boxes = request.form.getlist('types')
-            # create_disk_img(partition_path=partition_name, output_path='./disk_images')
-            bulk_extractor(image_path=partition_name, output_directory='./extracted_data')
+            create_disk_img(partition_path=partition_name, output_path='./disk_images')
+            bulk_extractor(image_path=f'./disk_images/{os.path.basename(partition_name)}.img', output_directory='./extracted_data')
             bulk_extractor_data_to_csv(data_dir_path=f'./extracted_data/{os.path.basename(partition_name)}')
             return redirect("/extracted")
 

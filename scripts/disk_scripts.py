@@ -36,7 +36,7 @@ def get_disk_info():
     return disk_info
 
 
-def create_disk_img(partition_path : str, output_path: str = '../disk_images'):
+def create_disk_img(partition_path: str, output_path: str = '../disk_images'):
     file_name = os.path.basename(partition_path)
     command = f"dd if={partition_path} of={output_path}/{file_name}.img"
     print(f'Creating image of partition {file_name}...')
@@ -67,12 +67,8 @@ def bulk_extractor_data_to_csv(data_dir_path: str, files=None):
                     for line in file:
                         if not line.startswith('#'):
                             parts = line.split()
-                            if len(parts) > 1:
-                                if file_name == 'url.txt':  # fix for too long texts in url file
-                                    if len(parts) < 100:
-                                        extracted.append(parts[1])
-                                else:
-                                    extracted.append(parts[1])
+                            if len(parts) > 1 and '\x00' not in parts[1]:
+                                extracted.append(parts[1])
 
                 output_dir_name = data_dir_path + '_csv'
                 if not os.path.isdir(output_dir_name):
