@@ -1,5 +1,7 @@
 import os
 import csv
+import time
+
 sudoPassword = 'kali'
 
 def get_disk_info():
@@ -137,6 +139,22 @@ def remove_data(partition_name: str, data_dir_path: str = '../extracted_data', i
             command = f"rm {file_path}"
             print(f'Deleting image {file_path}')
             os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
+
+
+def mount_disk_image(disk_img_path):
+    command = f"mount {disk_img_path} /mnt/mountpoint -o loop,ro"
+    print(f'Mounting disk image {disk_img_path}')
+    os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
+    time.sleep(1)
+    print('Mounting done')
+
+
+def unmount_disk_image():
+    command = "umount /mnt/mountpoint"
+    print('Unmounting disk image')
+    os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
+    print('Unmounting done')
+
 
 if __name__ == "__main__":
     # create_disk_img('/dev/sdb1')
