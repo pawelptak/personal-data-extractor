@@ -5,6 +5,7 @@ Extracting
 - phone numbers, 
 - url addresses, 
 - e-mail addresses, 
+- credit card numbers,
 - license plates number 
 
 from files in connected external drive.
