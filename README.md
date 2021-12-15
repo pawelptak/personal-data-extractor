@@ -6,7 +6,7 @@ Extracting phone numbers, url addresses, e-mail addresses, license plates number
 ### Requirements
 Tested on *Kali Linux 2021.3*.
 
-Needed Python libraries listed in *requirements.txt* file.
+Needed Python libraries listed in [requirements.txt](https://gitlab.com/pawelptak/personal-data-extractor/-/blob/master/requirements.txt) file.
 
 The system needs following tools installed:
 - [OpenALPR](https://github.com/openalpr/openalpr/wiki/Compilation-instructions-(Ubuntu-Linux)#the-easy-way) (for license plate numbers recognition)
