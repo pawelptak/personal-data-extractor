@@ -1,7 +1,13 @@
 # Project - Extracting personal data from drive
 
 ### Features
-Extracting phone numbers, url addresses, e-mail addresses, license plates number from files in connected external drive.
+Extracting 
+- phone numbers, 
+- url addresses, 
+- e-mail addresses, 
+- license plates number 
+
+from files in connected external drive.
 
 ### Requirements
 Tested on *Kali Linux 2021.3*.
