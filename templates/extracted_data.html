@@ -7,41 +7,40 @@
 {% block body %}
 <h4>Extracted data</h4>
 <form method="post">
-{% for partition_name, data in data["partitions"].items() %}
-<div class="card">
-  <h5 class="card-header" data-bs-toggle="collapse" href="#{{ partition_name }}" role="button" aria-expanded="false" aria-controls="collapseExample">
+    {% for partition_name, data in data["partitions"].items() %}
+    <div class="card">
+        <h5 class="card-header" data-bs-toggle="collapse" href="#{{ partition_name }}" role="button"
+            aria-expanded="false" aria-controls="collapseExample">
 
-      <div class="d-flex justify-content-between">
-            <!--partition name-->
-            {{ partition_name }}
-          <input type="submit" name="delbtn-{{ partition_name }}" value="Delete data" class="btn btn-sm btn-danger">
-      </div>
-  </h5>
-</div>
-<div class="collapse" id="{{ partition_name }}">
-  <div class="card card-body">
-      <!--items = ['name', ['content1', 'content2', ...]]-->
-      {% for data_type, extracted_data in data.items() %}
-
-        <div class="card">
-          <h5 class="card-header" data-bs-toggle="collapse" href="#{{ data_type }}" role="button" aria-expanded="false" aria-controls="collapseExample">
-            {{ data_type }}: <b>{{ extracted_data|length }}</b>
-          </h5>
-            <div class="collapse" id="{{ data_type }}">
-                <div class="card card-body">
-                    {% for item in extracted_data %}
+            <div class="d-flex justify-content-between">
+                {{ partition_name }}
+                <input type="submit" name="delbtn-{{ partition_name }}" value="Delete data"
+                       class="btn btn-sm btn-danger">
+            </div>
+        </h5>
+    </div>
+    <div class="collapse" id="{{ partition_name }}">
+        <div class="card card-body">
+            {% for data_type, extracted_data in data.items() %}
+            <div class="card">
+                <h5 class="card-header" data-bs-toggle="collapse" href="#{{ data_type }}" role="button"
+                    aria-expanded="false" aria-controls="collapseExample">
+                    {{ data_type }}: <b>{{ extracted_data|length }}</b>
+                </h5>
+                <div class="collapse" id="{{ data_type }}">
+                    <div class="card card-body">
+                        {% for item in extracted_data %}
                         <ul class="list-group list-group-flush">
-                          <li class="list-group-item">{{ item }}</li>
+                            <li class="list-group-item">{{ item }}</li>
                         </ul>
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-
-      {% endfor %}
-  </div>
-</div>
-{% endfor %}
+    </div>
+    {% endfor %}
 </form>
 
 {% endblock %}

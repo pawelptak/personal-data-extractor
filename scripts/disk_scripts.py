@@ -128,12 +128,14 @@ def remove_data(partition_name: str, data_dir_path: str = '../extracted_data', i
             print(f'Deleting all contents of {dir_path}')
             os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
 
+            while len(os.listdir(dir_path)) > 0:
+                time.sleep(.5)
             command = f"rm -d {dir_path}"
             os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
 
     for file_name in os.listdir(img_dir_path):
         file_path = os.path.join(img_dir_path, file_name)
-        if file_name.startswith(partition_name):
+        if file_name[:file_name.find('.')] == partition_name:
             command = f"rm {file_path}"
             print(f'Deleting image {file_path}')
             os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
