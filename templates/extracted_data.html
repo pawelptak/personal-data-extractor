@@ -7,31 +7,31 @@
 {% block body %}
 <h4>Extracted data</h4>
 <form method="post">
-{% for item in data %}
+{% for partition_name, data in data["partitions"].items() %}
 <div class="card">
-  <h5 class="card-header" data-bs-toggle="collapse" href="#{{ item[0] }}" role="button" aria-expanded="false" aria-controls="collapseExample">
+  <h5 class="card-header" data-bs-toggle="collapse" href="#{{ partition_name }}" role="button" aria-expanded="false" aria-controls="collapseExample">
 
       <div class="d-flex justify-content-between">
             <!--partition name-->
-            {{ item[0] }}
-          <input type="submit" name="delbtn-{{ item[0] }}" value="Delete data" class="btn btn-sm btn-danger">
+            {{ partition_name }}
+          <input type="submit" name="delbtn-{{ partition_name }}" value="Delete data" class="btn btn-sm btn-danger">
       </div>
   </h5>
 </div>
-<div class="collapse" id="{{ item[0] }}">
+<div class="collapse" id="{{ partition_name }}">
   <div class="card card-body">
       <!--items = ['name', ['content1', 'content2', ...]]-->
-      {% for items in item[1] %}
+      {% for data_type, extracted_data in data.items() %}
 
         <div class="card">
-          <h5 class="card-header" data-bs-toggle="collapse" href="#{{ items[0] }}" role="button" aria-expanded="false" aria-controls="collapseExample">
-            {{ items[0] }}: <b>{{ items[1]|length }}</b>
+          <h5 class="card-header" data-bs-toggle="collapse" href="#{{ data_type }}" role="button" aria-expanded="false" aria-controls="collapseExample">
+            {{ data_type }}: <b>{{ extracted_data|length }}</b>
           </h5>
-            <div class="collapse" id="{{ items[0] }}">
+            <div class="collapse" id="{{ data_type }}">
                 <div class="card card-body">
-                    {% for dat in items[1] %}
+                    {% for item in extracted_data %}
                         <ul class="list-group list-group-flush">
-                          <li class="list-group-item">{{ dat }}</li>
+                          <li class="list-group-item">{{ item }}</li>
                         </ul>
                     {% endfor %}
                 </div>
@@ -41,7 +41,7 @@
       {% endfor %}
   </div>
 </div>
-</form>
 {% endfor %}
+</form>
 
 {% endblock %}

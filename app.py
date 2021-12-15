@@ -37,9 +37,11 @@ def show_extracted():
 
     if request.method == "POST":
         for key in request.form:
+            print('PRESSED', key)
             if key.startswith('delbtn-'):
                 partition_name = key.partition('-')[-1]
-                remove_data(partition_name=partition_name, data_dir_path='./extracted_data', img_dir_path='./disk_images')
+                #remove_data(partition_name=partition_name, data_dir_path='./extracted_data', img_dir_path='./disk_images')
+                return redirect("/extracted")
 
     return render_template('extracted_data.html', data=extracted_data)
 

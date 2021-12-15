@@ -96,7 +96,7 @@ def get_partition_size(partition_path: str):
 
 # get data from one partition
 def get_bulk_partiton_data(data_dir_path: str):
-    all_data = []
+    all_data = {}
     for file_name in os.listdir(data_dir_path):
         file_path = os.path.join(data_dir_path, file_name)
         current_data = []
@@ -104,25 +104,26 @@ def get_bulk_partiton_data(data_dir_path: str):
             reader = csv.reader(csv_file)
             for row in reader:
                 current_data.append(row[0])
-        all_data.append([file_name.split('.')[0], current_data])
+        all_data[file_name.split('.')[0]] = current_data
     print(all_data)
     return all_data
 
 
 # get data from all partitions
 def get_bulk_all_data(data_dir_path: str = '../extracted_data'):
-    all_partition_data = []
+    all_partition_data = {"partitions": {}}
     for i, dir_name in enumerate(os.listdir(data_dir_path)):
         if dir_name.endswith('_csv'):
             dir_path = os.path.join(data_dir_path, dir_name)
-            all_partition_data.append([dir_name[:dir_name.find('_')], get_bulk_partiton_data(dir_path)])
+            all_partition_data["partitions"].update({dir_name[:dir_name.find('_')] : get_bulk_partiton_data(dir_path)})
+    print(all_partition_data)
     return all_partition_data
 
 
 def remove_data(partition_name: str, data_dir_path: str = '../extracted_data', img_dir_path: str = '../disk_images'):
     for dir_name in os.listdir(data_dir_path):
         dir_path = os.path.join(data_dir_path, dir_name)
-        if dir_name.startswith(partition_name):
+        if dir_name[:dir_name.find('_')] == partition_name or dir_name == partition_name:
             command = f"rm -r {dir_path}/*"
             print(f'Deleting all contents of {dir_path}')
             os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
@@ -155,10 +156,9 @@ def unmount_disk_image():
 
 if __name__ == "__main__":
     # create_disk_img('/dev/sdb1')
-    # bulk_extractor('../disk_images/sdb1.img')
-    bulk_extractor_data_to_csv('../extracted_data/sdb1')
-    # get_bulk_csv_data('../extracted_data/sdb1_csv')
-    # get_bulk_all_data()
+    bulk_extractor('../disk_images/sdb12.img')
+    bulk_extractor_data_to_csv('../extracted_data/sdb12')
+    get_bulk_all_data()
     # remove_data(partition_name='sdc1')
     # bulk_extractor(image_path='/dev/sdc1')
     pass
