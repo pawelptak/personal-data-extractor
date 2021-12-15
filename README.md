@@ -18,3 +18,7 @@ Needed Python libraries listed in [requirements.txt](https://gitlab.com/pawelpta
 The system needs following tools installed:
 - [OpenALPR](https://github.com/openalpr/openalpr/wiki/Compilation-instructions-(Ubuntu-Linux)#the-easy-way) (for license plate numbers recognition)
 - [Bulk-Extractor](https://www.kali.org/tools/bulk-extractor/) (for personal data extraction)
+
+## To do
+- Extract names and surnames
+- Extract social media profiles
