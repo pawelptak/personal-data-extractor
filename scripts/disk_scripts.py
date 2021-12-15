@@ -1,8 +1,12 @@
 import os
 import csv
 import time
+import uuid
+import shutil
+
 
 sudoPassword = 'kali'
+
 
 def get_disk_info():
     command = 'fdisk -l'
@@ -39,23 +43,34 @@ def get_disk_info():
 
 
 def create_disk_img(partition_path: str, output_path: str = '../disk_images'):
+    partition_id = str(uuid.uuid4())
+    output_path = os.path.join(output_path, partition_id)
+    if not os.path.isdir(output_path):
+        os.mkdir(output_path)
     file_name = os.path.basename(partition_path)
     command = f"dd if={partition_path} of={output_path}/{file_name}.img"
     print(f'Creating image of partition {file_name}...')
     output = os.popen(f'echo {sudoPassword} | sudo -S %s' % (command)).read()
     print('Image created.')
-    return output
+    return partition_id
 
 
-def bulk_extractor(image_path: str, output_directory: str = '../extracted_data'):
-    file_name = os.path.basename(image_path).split('.')[0]
-    command = f"bulk_extractor -R -o {output_directory}/{file_name} {image_path}"
+def bulk_extractor(images_dir: str, partition_id: str):
+    img_dir = os.path.join(images_dir, partition_id)
+    img_fname = [x for x in os.listdir(img_dir) if x.endswith('img')][0]
+    image_path = os.path.join(img_dir, img_fname)
+    output_dir = os.path.join(img_dir, 'extracted_data')
+    if not os.path.isdir(output_dir):
+        os.mkdir(output_dir)
+    command = f"bulk_extractor -R -o {output_dir} {image_path}"
     print(f'Bulk-extractor: extracting data from {image_path}')
     output = os.popen(f'echo {sudoPassword} | sudo -S %s' % (command)).read()
     print('Bulk-extractor: Data extracted.')
 
 
-def bulk_extractor_data_to_csv(data_dir_path: str, files=None):
+def bulk_extractor_data_to_csv(images_dir: str, partition_id: str, files=None):
+    img_dir = os.path.join(images_dir, partition_id)
+    data_dir_path = os.path.join(img_dir, 'extracted_data')
     if files is None:
         files = ['domain_histogram.txt', 'email_histogram.txt', 'ip.txt', 'url_histogram.txt', 'ccn_histogram.txt', 'telephone_histogram.txt']
 
@@ -98,6 +113,7 @@ def get_partition_size(partition_path: str):
 def get_partiton_csv_data(data_dir_path: str):
     all_data = {}
     for file_name in os.listdir(data_dir_path):
+        print(file_name)
         file_path = os.path.join(data_dir_path, file_name)
         current_data = []
         with open(file_path, newline='') as csv_file:
@@ -110,36 +126,19 @@ def get_partiton_csv_data(data_dir_path: str):
 
 
 # get data from all partitions
-def get_bulk_all_data(data_dir_path: str = '../extracted_data'):
-    all_partition_data = {"partitions": {}}
-    for i, dir_name in enumerate(os.listdir(data_dir_path)):
-        if dir_name.endswith('_csv'):
-            dir_path = os.path.join(data_dir_path, dir_name)
-            all_partition_data["partitions"].update({dir_name[:dir_name.find('_')] : get_partiton_csv_data(dir_path)})
+def get_all_csv_data(data_dir_path: str = '../disk_images'):
+    all_partition_data = {}
+    for id_dir in os.listdir(data_dir_path):
+        id_dir_path = os.path.join(data_dir_path, id_dir)
+        if os.path.isdir(id_dir_path):
+            partition_id = os.path.basename(id_dir_path)
+            for data_dir in os.listdir(id_dir_path):
+                if data_dir.endswith('_csv'):
+                    dir_path = os.path.join(id_dir_path, data_dir)
+                    all_partition_data.update({partition_id: {"name": get_partition_name_from_id(data_dir_path, partition_id), "data": get_partiton_csv_data(dir_path)}})
+                    #all_partition_data["id"].update({partition_id: get_partiton_csv_data(dir_path)})
     print(all_partition_data)
     return all_partition_data
-
-
-def remove_data(partition_name: str, data_dir_path: str = '../extracted_data', img_dir_path: str = '../disk_images'):
-    for dir_name in os.listdir(data_dir_path):
-        dir_path = os.path.join(data_dir_path, dir_name)
-        if dir_name[:dir_name.find('_')] == partition_name or dir_name == partition_name:
-            command = f"rm -r {dir_path}/*"
-            print(f'Deleting all contents of {dir_path}')
-            os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
-
-            while len(os.listdir(dir_path)) > 0:
-                time.sleep(.5)
-            command = f"rm -d {dir_path}"
-            os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
-
-    for file_name in os.listdir(img_dir_path):
-        file_path = os.path.join(img_dir_path, file_name)
-        if file_name[:file_name.find('.')] == partition_name:
-            command = f"rm {file_path}"
-            print(f'Deleting image {file_path}')
-            os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
-
 
 def mount_disk_image(disk_img_path):
     command = f"mount {disk_img_path} /mnt/mountpoint -o loop,ro"
@@ -156,11 +155,49 @@ def unmount_disk_image():
     print('Unmounting done')
 
 
+def get_partition_name_from_id(data_dir_path: str, partition_id: str):
+    partition_name = ""
+    for id_dir in os.listdir(data_dir_path):
+        id_dir_path = os.path.join(data_dir_path, id_dir)
+        if os.path.isdir(id_dir_path):
+            part_id = os.path.basename(id_dir_path)
+            if part_id == partition_id:
+                partition_file_name = [x for x in os.listdir(id_dir_path) if x.endswith('.img')][0]
+                partition_name = partition_file_name[:partition_file_name.find('.')]
+    return partition_name
+
+
+def remove_data(data_dir_path: str, partition_id: str):
+    folder = '/path/to/folder'
+
+    for id_dir in os.listdir(data_dir_path):
+        id_dir_path = os.path.join(data_dir_path, id_dir)
+        if os.path.isdir(id_dir_path):
+            part_id = os.path.basename(id_dir_path)
+            if part_id == partition_id:
+                for filename in os.listdir(id_dir_path):
+                    file_path = os.path.join(folder, filename)
+                    try:
+                        if os.path.isfile(file_path) or os.path.islink(file_path):
+                            print(f'Deleting file {file_path}')
+                            os.unlink(file_path)
+                        elif os.path.isdir(file_path):
+                            print(f'Deleting directory {file_path}')
+                            shutil.rmtree(file_path)
+                    except Exception as e:
+                        print('Failed to delete %s. Reason: %s' % (file_path, e))
+                print(f'Deleting directory {id_dir_path}')
+                shutil.rmtree(id_dir_path)
+
 if __name__ == "__main__":
-    # create_disk_img('/dev/sdb1')
-    bulk_extractor('../disk_images/sdb12.img')
-    bulk_extractor_data_to_csv('../extracted_data/sdb12')
-    get_bulk_all_data()
-    # remove_data(partition_name='sdc1')
-    # bulk_extractor(image_path='/dev/sdc1')
+    #get_disk_info()
+    #img_id = create_disk_img('/dev/sdd1')
+    #bulk_extractor(images_dir='../disk_images', partition_id=img_id)
+    #bulk_extractor_data_to_csv(images_dir='../disk_images', partition_id=img_id)
+    get_all_csv_data()
+    #name = get_partition_name_from_id(data_dir_path='../disk_images', partition_id="22e6d54c-d5b6-4e36-8536-83c996eeeba3")
+    #print(name)
+
+    #remove_data(data_dir_path='../disk_images', partition_id="e2136eb0-59a6-4b77-9f5d-835d5c1812ed")
+
     pass

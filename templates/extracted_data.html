@@ -7,21 +7,19 @@
 {% block body %}
 <h4>Extracted data</h4>
 <form method="post">
-    {% for partition_name, data in data["partitions"].items() %}
+    {% for partition_id, partition_info in data.items() %}
     <div class="card">
-        <h5 class="card-header" data-bs-toggle="collapse" href="#{{ partition_name }}" role="button"
-            aria-expanded="false" aria-controls="collapseExample">
-
+        <h5 class="card-header" data-bs-toggle="collapse" href="#b{{ partition_id }}" role="button" aria-expanded="false" aria-controls="collapseExample">
             <div class="d-flex justify-content-between">
-                {{ partition_name }}
-                <input type="submit" name="delbtn-{{ partition_name }}" value="Delete data"
+                {{ partition_info["name"] }}
+                <input type="submit" name="delbtn-{{ partition_id }}" value="Delete data"
                        class="btn btn-sm btn-danger">
             </div>
         </h5>
     </div>
-    <div class="collapse" id="{{ partition_name }}">
+    <div class="collapse" id="b{{ partition_id }}">
         <div class="card card-body">
-            {% for data_type, extracted_data in data.items() %}
+            {% for data_type, extracted_data in partition_info["data"].items() %}
             <div class="card">
                 <h5 class="card-header" data-bs-toggle="collapse" href="#{{ data_type }}" role="button"
                     aria-expanded="false" aria-controls="collapseExample">
@@ -42,5 +40,4 @@
     </div>
     {% endfor %}
 </form>
-
 {% endblock %}

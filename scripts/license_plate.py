@@ -5,7 +5,7 @@ import json
 import os
 import csv
 
-from scripts.disk_scripts import mount_disk_image, unmount_disk_image
+from scripts.disk_scripts import mount_disk_image, unmount_disk_image, get_partition_name_from_id
 
 def get_license_plates(img_path):
     command = f"alpr -c eu -j {img_path}"
@@ -40,7 +40,9 @@ def find_image_files(path):
     return output
 
 
-def license_plate_data_to_csv(disk_image_path: str, data_dir_path: str):
+def license_plate_data_to_csv(data_dir_path: str, partition_id: str):
+    img_filename = get_partition_name_from_id(data_dir_path, partition_id) + ".img"
+    disk_image_path = os.path.join(data_dir_path, partition_id, img_filename)
     mount_disk_image(disk_image_path)
     img_files = find_image_files('/mnt/mountpoint')
     extracted_jsons = []
@@ -51,14 +53,11 @@ def license_plate_data_to_csv(disk_image_path: str, data_dir_path: str):
     print(extracted_jsons)
     unmount_disk_image()
 
-    file_name = os.path.basename(disk_image_path)
-    partition_name = file_name[:file_name.find('.')]
-    print(f"Saving license plate data from {disk_image_path} to csv...")
-    output_csv_path = os.path.join(data_dir_path, partition_name + '_csv')
-
+    output_csv_path = os.path.join(data_dir_path, partition_id, 'extracted_data_csv')
     if not os.path.isdir(output_csv_path):
         os.mkdir(output_csv_path)
 
+    print(f"Saving license plate data from {disk_image_path} to csv...")
     with open(os.path.join(output_csv_path, 'license_plates.csv'), 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
         for js in extracted_jsons:
@@ -69,6 +68,7 @@ if __name__ == "__main__":
     # img_path = 'audi2.jpg'
     # data = get_license_plates(img_path)
     # print(data)
-    license_plate_data_to_csv(disk_image_path='../disk_images/sdc1.img', data_dir_path="../extracted_data")
+    license_plate_data_to_csv(data_dir_path='../disk_images/', partition_id="25410c57-fd06-4ae9-b9f6-ec2bb237a0e5")
     #print(get_license_plates('nissan.jpg'))
+
 

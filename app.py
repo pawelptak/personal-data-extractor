@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, request, redirect
-from scripts.disk_scripts import get_disk_info, get_partition_size, create_disk_img, bulk_extractor, bulk_extractor_data_to_csv, get_bulk_all_data, remove_data
+from scripts.disk_scripts import get_disk_info, get_partition_size, create_disk_img, bulk_extractor, bulk_extractor_data_to_csv, get_all_csv_data, remove_data
 from scripts.license_plate import license_plate_data_to_csv
 
 app = Flask(__name__)
@@ -25,23 +25,24 @@ def show_disk_info(id):
     if request.method == "POST":
         if request.form.get('submit-button'):
             # checked_boxes = request.form.getlist('types')
-            create_disk_img(partition_path=partition_name, output_path='./disk_images')
-            bulk_extractor(image_path=f'./disk_images/{os.path.basename(partition_name)}.img', output_directory='./extracted_data')
-            bulk_extractor_data_to_csv(data_dir_path=f'./extracted_data/{os.path.basename(partition_name)}')
-            license_plate_data_to_csv(disk_image_path=f'./disk_images/{os.path.basename(partition_name)}.img', data_dir_path='./extracted_data')
+            img_id = create_disk_img(partition_path=partition_name, output_path='./disk_images')
+            bulk_extractor(images_dir='./disk_images', partition_id=img_id)
+            bulk_extractor_data_to_csv(images_dir='./disk_images', partition_id=img_id)
+            license_plate_data_to_csv(data_dir_path='./disk_images/', partition_id=img_id)
+
             return redirect("/extracted")
 
     return render_template('partition_details.html', data=partition_details)
 
 @app.route("/extracted", methods=['GET', 'POST'])
 def show_extracted():
-    extracted_data = get_bulk_all_data(data_dir_path='./extracted_data')
+    extracted_data = get_all_csv_data(data_dir_path='./disk_images')
 
     if request.method == "POST":
         for key in request.form:
             if key.startswith('delbtn-'):
-                partition_name = key.partition('-')[-1]
-                remove_data(partition_name=partition_name, data_dir_path='./extracted_data', img_dir_path='./disk_images')
+                partition_id = key.partition('-')[-1]
+                remove_data(data_dir_path='./disk_images', partition_id=partition_id)
                 return redirect("/extracted")
 
     return render_template('extracted_data.html', data=extracted_data)
