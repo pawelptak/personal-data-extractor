@@ -20,6 +20,7 @@ The system needs following tools installed:
 - [Bulk-Extractor](https://www.kali.org/tools/bulk-extractor/) (for personal data extraction)
 
 ## To do
-- Extract names and surnames
-- Extract social media profiles
-- Generate reports
+- Extract names and surnames.
+- Extract home addresses.
+- Extract social media profiles.
+- Generate reports.
