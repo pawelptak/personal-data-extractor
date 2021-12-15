@@ -95,7 +95,7 @@ def get_partition_size(partition_path: str):
 
 
 # get data from one partition
-def get_bulk_partiton_data(data_dir_path: str):
+def get_partiton_csv_data(data_dir_path: str):
     all_data = {}
     for file_name in os.listdir(data_dir_path):
         file_path = os.path.join(data_dir_path, file_name)
@@ -115,7 +115,7 @@ def get_bulk_all_data(data_dir_path: str = '../extracted_data'):
     for i, dir_name in enumerate(os.listdir(data_dir_path)):
         if dir_name.endswith('_csv'):
             dir_path = os.path.join(data_dir_path, dir_name)
-            all_partition_data["partitions"].update({dir_name[:dir_name.find('_')] : get_bulk_partiton_data(dir_path)})
+            all_partition_data["partitions"].update({dir_name[:dir_name.find('_')] : get_partiton_csv_data(dir_path)})
     print(all_partition_data)
     return all_partition_data
 
