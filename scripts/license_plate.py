@@ -65,10 +65,10 @@ def license_plate_data_to_csv(data_dir_path: str, partition_id: str):
 
 
 if __name__ == "__main__":
-    # img_path = 'audi2.jpg'
-    # data = get_license_plates(img_path)
-    # print(data)
-    license_plate_data_to_csv(data_dir_path='../disk_images/', partition_id="25410c57-fd06-4ae9-b9f6-ec2bb237a0e5")
+    img_path = 'audi3.jpg'
+    data = get_license_plates(img_path)
+    print(data)
+    #license_plate_data_to_csv(data_dir_path='../disk_images/', partition_id="25410c57-fd06-4ae9-b9f6-ec2bb237a0e5")
     #print(get_license_plates('nissan.jpg'))
 
 
