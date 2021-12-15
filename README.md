@@ -1,4 +1,4 @@
-# Project - Extracting personal data from drive
+# Extracting personal data from drive
 
 ### Features
 Extracting 
