@@ -22,3 +22,4 @@ The system needs following tools installed:
 ## To do
 - Extract names and surnames
 - Extract social media profiles
+- Generate reports
