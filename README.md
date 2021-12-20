@@ -13,7 +13,7 @@ from files in connected external drive.
 ### Requirements
 Tested on *Kali Linux 2021.3*.
 
-- Insert system sudo password in settings.py file.
+- Insert system sudo password in [settings.py](https://gitlab.com/pawelptak/personal-data-extractor/-/blob/master/settings.py) file.
 
 - Needed Python libraries listed in [requirements.txt](https://gitlab.com/pawelptak/personal-data-extractor/-/blob/master/requirements.txt) file.
 
