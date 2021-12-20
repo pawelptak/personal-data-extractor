@@ -4,9 +4,7 @@ import time
 import uuid
 import shutil
 from datetime import datetime
-
-sudoPassword = 'kali'
-
+from settings import sudoPassword
 
 def get_disk_info():
     command = 'fdisk -l'
