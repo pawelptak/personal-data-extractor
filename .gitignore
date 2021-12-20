@@ -155,5 +155,5 @@ fabric.properties
 # extracted files
 /extracted_data/
 
-# configuration file
-settings.py
+# development files
+*_development.*

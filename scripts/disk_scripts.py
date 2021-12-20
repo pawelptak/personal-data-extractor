@@ -4,7 +4,7 @@ import time
 import uuid
 import shutil
 from datetime import datetime
-from settings import sudoPassword
+from settings_development import sudoPassword
 
 def get_disk_info():
     command = 'fdisk -l'
