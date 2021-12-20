@@ -3,7 +3,7 @@ import csv
 import time
 import uuid
 import shutil
-
+from datetime import datetime
 
 sudoPassword = 'kali'
 
@@ -52,6 +52,10 @@ def create_disk_img(partition_path: str, output_path: str = '../disk_images'):
     print(f'Creating image of partition {file_name}...')
     output = os.popen(f'echo {sudoPassword} | sudo -S %s' % (command)).read()
     print('Image created.')
+    curr_datetime = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
+    f_path = os.path.join(output_path, f'{curr_datetime}_date')
+    with open(f_path, 'w') as f:
+        pass
     return partition_id
 
 
@@ -132,10 +136,16 @@ def get_all_csv_data(data_dir_path: str = '../disk_images'):
         id_dir_path = os.path.join(data_dir_path, id_dir)
         if os.path.isdir(id_dir_path):
             partition_id = os.path.basename(id_dir_path)
-            for data_dir in os.listdir(id_dir_path):
-                if data_dir.endswith('_csv'):
-                    dir_path = os.path.join(id_dir_path, data_dir)
-                    all_partition_data.update({partition_id: {"name": get_partition_name_from_id(data_dir_path, partition_id), "data": get_partiton_csv_data(dir_path)}})
+            creation_date = [fname[:fname.rfind('_')] for fname in os.listdir(id_dir_path) if fname.endswith('_date')]
+            if creation_date:
+                creation_date = creation_date[0].split('-')
+                creation_date = f'{creation_date[0]}.{creation_date[1]}.{creation_date[2]} {creation_date[3]}:{creation_date[4]}:{creation_date[5]}'
+            else:
+                creation_date = 'N/A'
+            for file in os.listdir(id_dir_path):
+                if file.endswith('_csv'):
+                    dir_path = os.path.join(id_dir_path, file)
+                    all_partition_data.update({partition_id: {"creation_date": creation_date, "name": get_partition_name_from_id(data_dir_path, partition_id), "data": get_partiton_csv_data(dir_path)}})
                     #all_partition_data["id"].update({partition_id: get_partiton_csv_data(dir_path)})
     print(all_partition_data)
     return all_partition_data

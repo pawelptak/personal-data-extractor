@@ -12,6 +12,7 @@
         <h5 class="card-header" data-bs-toggle="collapse" href="#b{{ partition_id }}" role="button" aria-expanded="false" aria-controls="collapseExample">
             <div class="d-flex justify-content-between">
                 {{ partition_info["name"] }}
+                ({{ partition_info["creation_date"] }})
                 <input type="submit" name="delbtn-{{ partition_id }}" value="Delete data"
                        class="btn btn-sm btn-danger">
             </div>

@@ -1,5 +1,5 @@
 # requires https://github.com/openalpr/openalpr/wiki/Compilation-instructions-(Ubuntu-Linux)#the-easy-way
-# (14.12.2021) only "The Easy Way" working
+# As for 14.12.2021 only "The Easy Way" working
 
 import json
 import os
