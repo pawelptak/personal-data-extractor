@@ -30,7 +30,11 @@
                     <div class="card card-body">
                         {% for item in extracted_data %}
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item">{{ item }}</li>
+                            {% if data_type == 'url' %}
+                             <a href={{ item }} class="list-group-item">{{ item }}</a>
+                            {% else %}
+                             <li class="list-group-item">{{ item }}</li>
+                            {% endif %}
                         </ul>
                         {% endfor %}
                     </div>
