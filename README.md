@@ -25,4 +25,5 @@ Tested on *Kali Linux 2021.3*.
 - Extract names and surnames.
 - Extract home addresses.
 - Extract social media profiles.
+- Extract exif data from photos.
 - Generate reports.
