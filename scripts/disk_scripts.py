@@ -2,9 +2,11 @@ import os
 import csv
 import time
 import uuid
+import json
 import shutil
 from datetime import datetime
 from settings_development import sudoPassword
+import pandas as pd
 
 def get_disk_info():
     command = 'fdisk -l'
@@ -115,14 +117,20 @@ def get_partition_size(partition_path: str):
 def get_partiton_csv_data(data_dir_path: str):
     all_data = {}
     for file_name in os.listdir(data_dir_path):
-        print(file_name)
+
         file_path = os.path.join(data_dir_path, file_name)
         current_data = []
-        with open(file_path, newline='') as csv_file:
-            reader = csv.reader(csv_file)
-            for row in reader:
-                current_data.append(row[0])
-        all_data[file_name.split('.')[0]] = current_data
+        if 'exif.csv' not in file_name:
+            with open(file_path, newline='') as csv_file:
+                reader = csv.reader(csv_file)
+                for row in reader:
+                    current_data.append(row[0])
+            all_data[file_name.split('.')[0]] = current_data
+        else:
+            df = pd.read_csv(file_path)
+            js = df.to_json(orient='records')
+            parsed = json.loads(js)
+            all_data['exif'] = parsed
     print(all_data)
     return all_data
 
@@ -149,6 +157,8 @@ def get_all_csv_data(data_dir_path: str = '../disk_images'):
     return all_partition_data
 
 def mount_disk_image(disk_img_path):
+    command = "mkdir /mnt/mountpoint"
+    os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
     command = f"mount {disk_img_path} /mnt/mountpoint -o loop,ro"
     print(f'Mounting disk image {disk_img_path}')
     os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
