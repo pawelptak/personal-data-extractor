@@ -2,6 +2,7 @@ import os
 from flask import Flask, render_template, request, redirect
 from scripts.disk_scripts import get_disk_info, get_partition_size, create_disk_img, bulk_extractor, bulk_extractor_data_to_csv, get_all_csv_data, remove_data
 from scripts.license_plate import license_plate_data_to_csv
+from scripts.exif_scripts import exif_to_csv
 
 app = Flask(__name__)
 
@@ -29,6 +30,7 @@ def show_disk_info(id):
             bulk_extractor(images_dir='./disk_images', partition_id=img_id)
             bulk_extractor_data_to_csv(images_dir='./disk_images', partition_id=img_id)
             license_plate_data_to_csv(data_dir_path='./disk_images/', partition_id=img_id)
+            exif_to_csv(data_dir_path='./disk_images', partition_id=img_id)
 
             return redirect("/extracted")
 
