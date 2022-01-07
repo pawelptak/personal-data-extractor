@@ -6,7 +6,8 @@ Extracting
 - url addresses, 
 - e-mail addresses, 
 - credit card numbers,
-- license plates number 
+- license plates numbers,
+- exif data
 
 from files in connected external drive.
 
@@ -25,5 +26,4 @@ Tested on *Kali Linux 2021.3*.
 - Extract names and surnames.
 - Extract home addresses.
 - Extract social media profiles.
-- Extract exif data from photos.
 - Generate reports.
