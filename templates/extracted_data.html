@@ -29,16 +29,27 @@
                 <div class="collapse" id="{{ data_type }}">
                     <div class="card card-body">
                         {% for item in extracted_data %}
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">{{ item }}</li>
-                        </ul>
+                                <ul class="list-group list-group-flush">
+                                     {% if data_type == 'exif' %}
+                                        {% for exif_name, exif_data in item.items() %}
+                                            {% if exif_data %}
+                                                <p><b>{{ exif_name }}</b>: {{ exif_data }}</p>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <li class="list-group-item">{{ item }}</li>
+                                    {% endif %}
+                                </ul>
                         {% endfor %}
+
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
+    {% else %}
+    <p>No data extracted</p>
     {% endfor %}
 </form>
 {% endblock %}
