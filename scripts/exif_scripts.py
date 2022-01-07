@@ -1,8 +1,6 @@
 # requires https://exiftool.org
 
 import os
-import time
-
 import pandas as pd
 from scripts.disk_scripts import mount_disk_image, unmount_disk_image, get_partition_name_from_id
 
