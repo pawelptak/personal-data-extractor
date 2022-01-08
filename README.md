@@ -28,7 +28,7 @@ Tested on *Kali Linux 2021.3*.
 sudoPassword = 'your_password'
 ```
  
-4. Launch the application from *app.py* file
+4. Launch the application from *app.py* file. Application is running on http://127.0.0.1:5000
 
 ## To do
 - Extract names and surnames.
