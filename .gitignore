@@ -150,7 +150,7 @@ crashlytics-build.properties
 fabric.properties
 
 # created disk images
-/disk_images/
+disk_images/*
 
 # extracted files
 /extracted_data/
