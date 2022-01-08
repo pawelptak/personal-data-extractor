@@ -14,13 +14,21 @@ from files in connected external drive.
 ### Requirements
 Tested on *Kali Linux 2021.3*.
 
-- Insert system sudo password in [settings.py](https://gitlab.com/pawelptak/personal-data-extractor/-/blob/master/settings.py) file.
-
 - Needed Python libraries listed in [requirements.txt](https://gitlab.com/pawelptak/personal-data-extractor/-/blob/master/requirements.txt) file.
 
 - The system needs following tools installed:
     - [OpenALPR](https://github.com/openalpr/openalpr/wiki/Compilation-instructions-(Ubuntu-Linux)#the-easy-way) (for license plate numbers recognition)
     - [Bulk-Extractor](https://www.kali.org/tools/bulk-extractor/) (for personal data extraction)
+
+### Launching application
+1. Install libraries listed in the [Requirements section](#requirements)
+1. Create *settings_development.py* file in the same directory as the *settings.py* file
+2. Put your sudo password inside *settings_development.py* in the following form 
+```
+sudoPassword = 'your_password'
+```
+ 
+3. Launch the application from *app.py* file
 
 ## To do
 - Extract names and surnames.
