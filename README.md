@@ -22,13 +22,13 @@ Tested on *Kali Linux 2021.3*.
 
 ### Launching application
 1. Install libraries listed in the [Requirements section](#requirements)
-1. Create *settings_development.py* file in the same directory as the *settings.py* file
-2. Put your sudo password inside *settings_development.py* in the following form 
+2. Create *settings_development.py* file in the same directory as the *settings.py* file
+3. Put your sudo password inside *settings_development.py* in the following form 
 ```
 sudoPassword = 'your_password'
 ```
  
-3. Launch the application from *app.py* file
+4. Launch the application from *app.py* file
 
 ## To do
 - Extract names and surnames.
