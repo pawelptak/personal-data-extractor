@@ -24,7 +24,6 @@ def exif_to_csv(data_dir_path: str, partition_id: str):
 
 def remove_rows_with_no_data(df_path):
     df = pd.read_csv(df_path)
-    print(df)
     mask = len(df.columns) - df.isnull().sum(axis=1) > 1
     df = df[mask]
     if len(df) > 0:
@@ -33,5 +32,5 @@ def remove_rows_with_no_data(df_path):
         os.remove(df_path)
 
 if __name__ == "__main__":
-    #exif_to_csv('../disk_images', '98b59a39-03f5-494c-9a65-c80a3d608a0e')
-    remove_rows_with_no_data('../disk_images/442bb4e5-7c00-4cde-a13b-b441ea7f31c5/extracted_data_csv/exif.csv')
+    exif_to_csv('../disk_images', '98b59a39-03f5-494c-9a65-c80a3d608a0e')
+    #remove_rows_with_no_data('../disk_images/442bb4e5-7c00-4cde-a13b-b441ea7f31c5/extracted_data_csv/exif.csv')
