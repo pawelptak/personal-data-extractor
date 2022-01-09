@@ -8,6 +8,7 @@ from datetime import datetime
 from settings_development import sudoPassword
 import pandas as pd
 
+
 def get_disk_info():
     command = 'fdisk -l'
     print('Getting disk info')
@@ -114,11 +115,11 @@ def get_partition_size(partition_path: str):
 
 
 # get data from one partition
-def get_partiton_csv_data(data_dir_path: str):
+def get_partiton_csv_data(images_dir: str, partition_id: str):
     all_data = {}
-    for file_name in os.listdir(data_dir_path):
-
-        file_path = os.path.join(data_dir_path, file_name)
+    img_dir = os.path.join(images_dir, partition_id, 'extracted_data_csv')
+    for file_name in os.listdir(img_dir):
+        file_path = os.path.join(img_dir, file_name)
         current_data = []
         if 'exif.csv' not in file_name:
             with open(file_path, newline='') as csv_file:
@@ -150,11 +151,11 @@ def get_all_csv_data(data_dir_path: str = '../disk_images'):
                 creation_date = 'N/A'
             for file in os.listdir(id_dir_path):
                 if file.endswith('_csv'):
-                    dir_path = os.path.join(id_dir_path, file)
-                    all_partition_data.update({partition_id: {"creation_date": creation_date, "name": get_partition_name_from_id(data_dir_path, partition_id), "data": get_partiton_csv_data(dir_path)}})
+                    all_partition_data.update({partition_id: {"creation_date": creation_date, "name": get_partition_name_from_id(data_dir_path, partition_id), "data": get_partiton_csv_data(data_dir_path, partition_id)}})
                     #all_partition_data["id"].update({partition_id: get_partiton_csv_data(dir_path)})
     print(all_partition_data)
     return all_partition_data
+
 
 def mount_disk_image(disk_img_path):
     command = "mkdir /mnt/mountpoint"
@@ -162,7 +163,8 @@ def mount_disk_image(disk_img_path):
     command = f"mount {disk_img_path} /mnt/mountpoint -o loop,ro"
     print(f'Mounting disk image {disk_img_path}')
     os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
-    time.sleep(1)
+    while not os.listdir('/mnt/mountpoint'):
+        time.sleep(.5)
     print('Mounting done')
 
 
@@ -170,6 +172,8 @@ def unmount_disk_image():
     command = "umount /mnt/mountpoint"
     print('Unmounting disk image')
     os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
+    while os.listdir('/mnt/mountpoint'):
+        time.sleep(.5)
     print('Unmounting done')
 
 
@@ -207,12 +211,60 @@ def remove_data(data_dir_path: str, partition_id: str):
                 print(f'Deleting directory {id_dir_path}')
                 shutil.rmtree(id_dir_path)
 
+
+def generate_report_txt(partition_id, images_dir, out_dir):
+    img_dir = os.path.join(images_dir, partition_id)
+    partition_name = get_partition_name_from_id(images_dir, partition_id)
+    creation_date = [fname[:fname.rfind('_')] for fname in os.listdir(img_dir) if fname.endswith('_date')][0]
+    creation_date = creation_date.split('-')
+    creation_date = f'{creation_date[0]}.{creation_date[1]}.{creation_date[2]} {creation_date[3]}:{creation_date[4]}:{creation_date[5]}'
+
+    img_path = os.path.join(img_dir, f'{partition_name}.img')
+    img_size = os.path.getsize(img_path)
+    json_data = get_partiton_csv_data(images_dir=images_dir, partition_id=partition_id)
+
+    val_sum = 0
+    for k,v in json_data.items():
+        for _ in v:
+            val_sum+=1
+
+    report_creation_date = datetime.today()
+
+    out_file = os.path.join(out_dir, f'{report_creation_date.strftime("%d_%m_%Y_%H_%M_%S")}_report.txt')
+    with open(out_file, 'w') as f:
+        print(f'Generating report for ID: {partition_id}')
+        f.write(f'Report date: {report_creation_date.strftime("%d.%m.%Y %H:%M:%S")}\n\n')
+        f.write(f'Partition: {partition_name}\n')
+        f.write(f'Size: {img_size} B\n')
+        f.write(f'Image created on: {creation_date}\n\n')
+        f.write(f'Data found: {val_sum}\n\n')
+        f.write(40 * '*' + '\n')
+        for k, v in json_data.items():
+            f.write(20 * '_' + '\n')
+            f.write(f'{k.upper()}: {len(v)}\n')
+            f.write(20*'_'+'\n')
+            for item in v:
+                if 'exif' in k:
+                    for exif_name, exif_value in item.items():
+                        if exif_value:
+                            f.write(f'{exif_name}: {exif_value}\n')
+                    f.write('\n')
+                else:
+                    f.write(f'{item}\n')
+            f.write('\n')
+        f.write(40 * '*' + '\n')
+        print(f'Report saved to {out_file}')
+    os.system(f'xdg-open {os.path.abspath(out_dir)}')
+
+
 if __name__ == "__main__":
     #get_disk_info()
     #img_id = create_disk_img('/dev/sdd1')
     #bulk_extractor(images_dir='../disk_images', partition_id=img_id)
     #bulk_extractor_data_to_csv(images_dir='../disk_images', partition_id=img_id)
-    get_all_csv_data()
+    #get_all_csv_data()
+    #js = get_partiton_csv_data(images_dir='../disk_images/', partition_id="d5ab6ff5-152e-42e9-9505-1459f685f09a")
+    generate_report_txt("d5ab6ff5-152e-42e9-9505-1459f685f09a", '../disk_images', '../reports')
     #name = get_partition_name_from_id(data_dir_path='../disk_images', partition_id="22e6d54c-d5b6-4e36-8536-83c996eeeba3")
     #print(name)
 

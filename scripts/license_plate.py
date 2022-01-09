@@ -4,6 +4,7 @@
 import json
 import os
 import csv
+import time
 
 from scripts.disk_scripts import mount_disk_image, unmount_disk_image, get_partition_name_from_id
 
