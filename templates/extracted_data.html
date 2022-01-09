@@ -13,8 +13,12 @@
             <div class="d-flex justify-content-between">
                 {{ partition_info["name"] }}
                 ({{ partition_info["creation_date"] }})
-                <input type="submit" name="delbtn-{{ partition_id }}" value="Delete data"
-                       class="btn btn-sm btn-danger">
+                <div class="d-flex justify-content-end">
+                    <input type="submit" name="reportbtn-{{ partition_id }}" value="Create report"
+                           class="btn btn-sm btn-primary me-2">
+                    <input type="submit" name="delbtn-{{ partition_id }}" value="Delete data"
+                           class="btn btn-sm btn-danger">
+                </div>
             </div>
         </h5>
     </div>

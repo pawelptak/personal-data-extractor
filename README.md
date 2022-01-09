@@ -34,4 +34,3 @@ sudoPassword = 'your_password'
 - Extract names and surnames.
 - Extract home addresses.
 - Extract social media profiles.
-- Generate reports.
