@@ -44,6 +44,7 @@ def get_disk_info():
 
 
 def create_disk_img(partition_path: str, output_path: str = '../disk_images'):
+    unmount_disk_image()
     partition_id = str(uuid.uuid4())
     output_path = os.path.join(output_path, partition_id)
     if not os.path.isdir(output_path):
@@ -158,23 +159,31 @@ def get_all_csv_data(data_dir_path: str = '../disk_images'):
 
 
 def mount_disk_image(disk_img_path):
-    command = "mkdir /mnt/mountpoint"
-    os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
-    command = f"mount {disk_img_path} /mnt/mountpoint -o loop,ro"
-    print(f'Mounting disk image {disk_img_path}')
-    os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
-    while not os.listdir('/mnt/mountpoint'):
-        time.sleep(.5)
-    print('Mounting done')
+    if os.listdir('/mnt/mountpoint'):
+        print('Image already mounted')
+        return
+    else:
+        command = "mkdir /mnt/mountpoint"
+        os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
+        command = f"mount {disk_img_path} /mnt/mountpoint -o loop,ro"
+        print(f'Mounting disk image {disk_img_path}')
+        os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
+        while not os.listdir('/mnt/mountpoint'):
+            time.sleep(.5)
+        print('Mounting done')
 
 
 def unmount_disk_image():
-    command = "umount /mnt/mountpoint"
-    print('Unmounting disk image')
-    os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
-    while os.listdir('/mnt/mountpoint'):
-        time.sleep(.5)
-    print('Unmounting done')
+    if not os.listdir('/mnt/mountpoint'):
+        print('Image already unmounted')
+        return
+    else:
+        command = "umount /mnt/mountpoint"
+        print('Unmounting disk image')
+        os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
+        while os.listdir('/mnt/mountpoint'):
+            time.sleep(.5)
+        print('Unmounting done')
 
 
 def get_partition_name_from_id(data_dir_path: str, partition_id: str):
@@ -197,19 +206,25 @@ def remove_data(data_dir_path: str, partition_id: str):
         if os.path.isdir(id_dir_path):
             part_id = os.path.basename(id_dir_path)
             if part_id == partition_id:
-                for filename in os.listdir(id_dir_path):
-                    file_path = os.path.join(folder, filename)
-                    try:
-                        if os.path.isfile(file_path) or os.path.islink(file_path):
-                            print(f'Deleting file {file_path}')
-                            os.unlink(file_path)
-                        elif os.path.isdir(file_path):
-                            print(f'Deleting directory {file_path}')
-                            shutil.rmtree(file_path)
-                    except Exception as e:
-                        print('Failed to delete %s. Reason: %s' % (file_path, e))
+                # for filename in os.listdir(id_dir_path):
+                #     file_path = os.path.join(folder, filename)
+                #     command = f'rm -rf {file_path}'
+                #     os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
+                #     try:
+                #         if os.path.isfile(file_path) or os.path.islink(file_path):
+                #             print(f'Deleting file {file_path}')
+                #             os.unlink(file_path)
+                #         elif os.path.isdir(file_path):
+                #             print(f'Deleting directory {file_path}')
+                #             shutil.rmtree(file_path)
+                #     except Exception as e:
+                #         print('Failed to delete %s. Reason: %s' % (file_path, e))
                 print(f'Deleting directory {id_dir_path}')
-                shutil.rmtree(id_dir_path)
+                command = f'rm -rf {id_dir_path}'
+                os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
+                while os.path.isdir(id_dir_path):
+                    time.sleep(.5)
+                #shutil.rmtree(id_dir_path)
 
 
 def generate_report_txt(partition_id, images_dir, out_dir):
