@@ -159,12 +159,14 @@ def get_all_csv_data(data_dir_path: str = '../disk_images'):
 
 
 def mount_disk_image(disk_img_path):
+    if not os.path.exists('/mnt/mountpoint'):
+        command = "mkdir /mnt/mountpoint"
+        os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
+
     if os.listdir('/mnt/mountpoint'):
         print('Image already mounted')
         return
     else:
-        command = "mkdir /mnt/mountpoint"
-        os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
         command = f"mount {disk_img_path} /mnt/mountpoint -o loop,ro"
         print(f'Mounting disk image {disk_img_path}')
         os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
@@ -174,6 +176,10 @@ def mount_disk_image(disk_img_path):
 
 
 def unmount_disk_image():
+    if not os.path.exists('/mnt/mountpoint'):
+        command = "mkdir /mnt/mountpoint"
+        os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
+
     if not os.listdir('/mnt/mountpoint'):
         print('Image already unmounted')
         return
