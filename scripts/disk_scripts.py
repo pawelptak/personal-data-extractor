@@ -7,11 +7,13 @@ from datetime import datetime
 from settings_development import sudoPassword
 import pandas as pd
 from fpdf import FPDF
+import hashlib
+
 
 def get_disk_info():
     command = 'fdisk -l'
     print('Getting disk info')
-    output = os.popen(f'echo {sudoPassword} | sudo -S %s'%(command)).read()
+    output = os.popen(f'echo {sudoPassword} | sudo -S %s' % (command)).read()
     # print(output)
     output = output.splitlines()
     disk_lines = []
@@ -27,7 +29,7 @@ def get_disk_info():
         disk_name = name_with_prefix[len(prefix):]
         start = disk_lines[i]
         if i < len(disk_lines) - 1:
-            end = disk_lines[i+1] - 1
+            end = disk_lines[i + 1] - 1
         else:
             end = len(output)
         partition_names = []
@@ -77,7 +79,8 @@ def bulk_extractor_data_to_csv(images_dir: str, partition_id: str, files=None):
     img_dir = os.path.join(images_dir, partition_id)
     data_dir_path = os.path.join(img_dir, 'extracted_data')
     if files is None:
-        files = ['domain_histogram.txt', 'email_histogram.txt', 'ip.txt', 'url_histogram.txt', 'ccn_histogram.txt', 'telephone_histogram.txt']
+        files = ['domain_histogram.txt', 'email_histogram.txt', 'ip.txt', 'url_histogram.txt', 'ccn_histogram.txt',
+                 'telephone_histogram.txt']
 
     print(f"Converting {data_dir_path} to csv...")
     for file_name in os.listdir(data_dir_path):
@@ -151,8 +154,12 @@ def get_all_csv_data(data_dir_path: str = '../disk_images'):
                 creation_date = 'N/A'
             for file in os.listdir(id_dir_path):
                 if file.endswith('_csv'):
-                    all_partition_data.update({partition_id: {"creation_date": creation_date, "name": get_partition_name_from_id(data_dir_path, partition_id), "data": get_partiton_csv_data(data_dir_path, partition_id)}})
-                    #all_partition_data["id"].update({partition_id: get_partiton_csv_data(dir_path)})
+                    all_partition_data.update({partition_id: {"creation_date": creation_date,
+                                                              "name": get_partition_name_from_id(data_dir_path,
+                                                                                                 partition_id),
+                                                              "data": get_partiton_csv_data(data_dir_path,
+                                                                                            partition_id)}})
+                    # all_partition_data["id"].update({partition_id: get_partiton_csv_data(dir_path)})
     print(all_partition_data)
     return all_partition_data
 
@@ -229,7 +236,32 @@ def remove_data(data_dir_path: str, partition_id: str):
                 os.popen(f'echo {sudoPassword} | sudo -S %s' % (command))
                 while os.path.isdir(id_dir_path):
                     time.sleep(.5)
-                #shutil.rmtree(id_dir_path)
+                # shutil.rmtree(id_dir_path)
+
+
+def make_hash(filename):
+    md5 = hashlib.md5()
+    sha1 = hashlib.sha1()
+    # open file for reading in binary mode
+    with open(filename, 'rb') as file:
+        # loop till the end of the file
+        chunk = 0
+        while chunk != b'':
+            # read only 1024 bytes at a time
+            chunk = file.read(1024)
+            sha1.update(chunk)
+            md5.update(chunk)
+
+    # return the hex representation of digest
+    return sha1.hexdigest(), md5.hexdigest()
+
+
+def save_hash_sum(output, hash, hashname):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=10)
+    pdf.cell(0, 10, hash, 0, 1)
+    pdf.output(os.path.join(output, f'{hashname}.pdf'))
 
 
 def generate_report_pdf(partition_id, images_dir, out_dir):
@@ -244,9 +276,9 @@ def generate_report_pdf(partition_id, images_dir, out_dir):
     json_data = get_partiton_csv_data(images_dir=images_dir, partition_id=partition_id)
 
     val_sum = 0
-    for k,v in json_data.items():
+    for k, v in json_data.items():
         for _ in v:
-            val_sum+=1
+            val_sum += 1
 
     report_creation_date = datetime.today()
 
@@ -288,18 +320,23 @@ def generate_report_pdf(partition_id, images_dir, out_dir):
 
     os.system(f'xdg-open {os.path.abspath(out_dir)}')
 
+    sha1, md5 = make_hash(out_file)
+    save_hash_sum(out_dir, sha1, "sha1")
+    save_hash_sum(out_dir, md5, "md5")
+
 
 if __name__ == "__main__":
-    #get_disk_info()
-    #img_id = create_disk_img('/dev/sdd1')
-    #bulk_extractor(images_dir='../disk_images', partition_id=img_id)
-    #bulk_extractor_data_to_csv(images_dir='../disk_images', partition_id=img_id)
-    #get_all_csv_data()
-    #js = get_partiton_csv_data(images_dir='../disk_images/', partition_id="d5ab6ff5-152e-42e9-9505-1459f685f09a")
-    generate_report_pdf("d5ab6ff5-152e-42e9-9505-1459f685f09a", '../disk_images', '../reports')
-    #name = get_partition_name_from_id(data_dir_path='../disk_images', partition_id="22e6d54c-d5b6-4e36-8536-83c996eeeba3")
-    #print(name)
+    # get_disk_info()
+    # img_id = create_disk_img('/dev/sdd1')
+    # bulk_extractor(images_dir='../disk_images', partition_id=img_id)
+    # bulk_extractor_data_to_csv(images_dir='../disk_images', partition_id=img_id)
+    # get_all_csv_data()
+    # js = get_partiton_csv_data(images_dir='../disk_images/', partition_id="d5ab6ff5-152e-42e9-9505-1459f685f09a")
 
-    #remove_data(data_dir_path='../disk_images', partition_id="e2136eb0-59a6-4b77-9f5d-835d5c1812ed")
+    generate_report_pdf("d5ab6ff5-152e-42e9-9505-1459f685f09a", '../disk_images', '../reports')
+    # name = get_partition_name_from_id(data_dir_path='../disk_images', partition_id="22e6d54c-d5b6-4e36-8536-83c996eeeba3")
+    # print(name)
+
+    # remove_data(data_dir_path='../disk_images', partition_id="e2136eb0-59a6-4b77-9f5d-835d5c1812ed")
 
     pass
