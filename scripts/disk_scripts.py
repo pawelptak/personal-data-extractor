@@ -250,7 +250,7 @@ def generate_report_pdf(partition_id, images_dir, out_dir):
 
     report_creation_date = datetime.today()
 
-    out_dir = os.path.join(out_dir, f'{report_creation_date.strftime("%d_%m_%Y_%H_%M_%S")}')
+    out_dir = os.path.join(out_dir, partition_id)
 
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
@@ -260,18 +260,20 @@ def generate_report_pdf(partition_id, images_dir, out_dir):
     print(f'Generating report for ID: {partition_id}')
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
+    pdf.set_font("Arial", size=10)
 
     pdf.cell(0, 10, txt=f'Report date: {report_creation_date.strftime("%d.%m.%Y %H:%M:%S")}', ln=1, align='C')
     pdf.cell(0, 10, txt=f'Partition: {partition_name}', ln=2, align='L')
     pdf.cell(0, 10, txt=f'Size: {img_size} B', ln=2, align='L')
     pdf.cell(0, 10, txt=f'Image created on: {creation_date}', ln=2, align='L')
     pdf.cell(0, 10, txt=f'Data found: {val_sum}', ln=2, align='L')
-    pdf.cell(0, 10)
+
     for k, v in json_data.items():
         pdf.cell(0, 10, 20 * '_', 0, 1)
+        pdf.set_font("Arial", "B", size=10)
         pdf.cell(0, 10, f'{k.upper()}: {len(v)}', 0, 1)
-        pdf.cell(0, 10, 20 * '_', 0, 1)
+        pdf.set_font("Arial", size=10)
+
         for item in v:
             if 'exif' in k:
                 for exif_name, exif_value in item.items():
@@ -284,29 +286,6 @@ def generate_report_pdf(partition_id, images_dir, out_dir):
     # save the pdf with name .pdf
     pdf.output(out_file)
 
-    # with open(out_file, 'w') as f:
-    #
-    #     f.write(f'Report date: {report_creation_date.strftime("%d.%m.%Y %H:%M:%S")}\n\n')
-    #     f.write(f'Partition: {partition_name}\n')
-    #     f.write(f'Size: {img_size} B\n')
-    #     f.write(f'Image created on: {creation_date}\n\n')
-    #     f.write(f'Data found: {val_sum}\n\n')
-    #     f.write(40 * '*' + '\n')
-    #     for k, v in json_data.items():
-    #         f.write(20 * '_' + '\n')
-    #         f.write(f'{k.upper()}: {len(v)}\n')
-    #         f.write(20*'_'+'\n')
-    #         for item in v:
-    #             if 'exif' in k:
-    #                 for exif_name, exif_value in item.items():
-    #                     if exif_value:
-    #                         f.write(f'{exif_name}: {exif_value}\n')
-    #                 f.write('\n')
-    #             else:
-    #                 f.write(f'{item}\n')
-    #         f.write('\n')
-    #     f.write(40 * '*' + '\n')
-    #     print(f'Report saved to {out_file}')
     os.system(f'xdg-open {os.path.abspath(out_dir)}')
 
 
@@ -317,7 +296,7 @@ if __name__ == "__main__":
     #bulk_extractor_data_to_csv(images_dir='../disk_images', partition_id=img_id)
     #get_all_csv_data()
     #js = get_partiton_csv_data(images_dir='../disk_images/', partition_id="d5ab6ff5-152e-42e9-9505-1459f685f09a")
-    generate_report_txt("d5ab6ff5-152e-42e9-9505-1459f685f09a", '../disk_images', '../reports')
+    generate_report_pdf("d5ab6ff5-152e-42e9-9505-1459f685f09a", '../disk_images', '../reports')
     #name = get_partition_name_from_id(data_dir_path='../disk_images', partition_id="22e6d54c-d5b6-4e36-8536-83c996eeeba3")
     #print(name)
 
