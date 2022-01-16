@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, request, redirect
-from scripts.disk_scripts import get_disk_info, get_partition_size, create_disk_img, bulk_extractor, bulk_extractor_data_to_csv, get_all_csv_data, remove_data, generate_report_txt
+from scripts.disk_scripts import get_disk_info, get_partition_size, create_disk_img, bulk_extractor, bulk_extractor_data_to_csv, get_all_csv_data, remove_data, generate_report_pdf
 from scripts.license_plate import license_plate_data_to_csv
 from scripts.exif_scripts import exif_to_csv
 
@@ -48,7 +48,7 @@ def show_extracted():
                 return redirect("/extracted")
             elif key.startswith('reportbtn-'):
                 partition_id = key.partition('-')[-1]
-                generate_report_txt(partition_id=partition_id, images_dir='./disk_images', out_dir='./reports')
+                generate_report_pdf(partition_id=partition_id, images_dir='./disk_images', out_dir='./reports')
 
     return render_template('extracted_data.html', data=extracted_data)
 
