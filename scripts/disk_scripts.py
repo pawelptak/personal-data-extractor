@@ -8,6 +8,7 @@ from settings_development import sudoPassword
 import pandas as pd
 from fpdf import FPDF
 import hashlib
+import subprocess
 
 
 def get_disk_info():
@@ -70,9 +71,16 @@ def bulk_extractor(images_dir: str, partition_id: str):
     if not os.path.isdir(output_dir):
         os.mkdir(output_dir)
     command = f"bulk_extractor -R -o {output_dir} {image_path}"
+    sudo_command = f'echo {sudoPassword} | sudo -S %s' % (command)
     print(f'Bulk-extractor: extracting data from {image_path}')
-    output = os.popen(f'echo {sudoPassword} | sudo -S %s' % (command)).read()
-    print('Bulk-extractor: Data extracted.')
+    p = subprocess.Popen(sudo_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    while(True):
+        # returns None while subprocess is running
+        retcode = p.poll()
+        line = p.stdout.readline().replace(b'\n', b'').decode('UTF-8')
+        yield line
+        if retcode is not None:
+            break
 
 
 def bulk_extractor_data_to_csv(images_dir: str, partition_id: str, files=None):
@@ -333,10 +341,13 @@ if __name__ == "__main__":
     # get_all_csv_data()
     # js = get_partiton_csv_data(images_dir='../disk_images/', partition_id="d5ab6ff5-152e-42e9-9505-1459f685f09a")
 
-    generate_report_pdf("d5ab6ff5-152e-42e9-9505-1459f685f09a", '../disk_images', '../reports')
+    #generate_report_pdf("d5ab6ff5-152e-42e9-9505-1459f685f09a", '../disk_images', '../reports')
     # name = get_partition_name_from_id(data_dir_path='../disk_images', partition_id="22e6d54c-d5b6-4e36-8536-83c996eeeba3")
     # print(name)
 
     # remove_data(data_dir_path='../disk_images', partition_id="e2136eb0-59a6-4b77-9f5d-835d5c1812ed")
+
+    #output = run(ful_cmd, capture_output=True).stdout
+
 
     pass

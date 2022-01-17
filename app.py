@@ -1,4 +1,3 @@
-import os
 from flask import Flask, render_template, request, redirect
 from scripts.disk_scripts import get_disk_info, get_partition_size, create_disk_img, bulk_extractor, bulk_extractor_data_to_csv, get_all_csv_data, remove_data, generate_report_pdf
 from scripts.license_plate import license_plate_data_to_csv
@@ -25,16 +24,16 @@ def show_disk_info(id):
     print(partition_details)
     if request.method == "POST":
         if request.form.get('submit-button'):
-            # checked_boxes = request.form.getlist('types')
             img_id = create_disk_img(partition_path=partition_name, output_path='./disk_images')
-            bulk_extractor(images_dir='./disk_images', partition_id=img_id)
+            for line in bulk_extractor(images_dir='./disk_images', partition_id=img_id):
+                print(line)
             bulk_extractor_data_to_csv(images_dir='./disk_images', partition_id=img_id)
             license_plate_data_to_csv(data_dir_path='./disk_images/', partition_id=img_id)
             exif_to_csv(data_dir_path='./disk_images', partition_id=img_id)
-
             return redirect("/extracted")
 
-    return render_template('partition_details.html', data=partition_details)
+    return render_template('partition_details.html', data=partition_details, message='')
+
 
 @app.route("/extracted", methods=['GET', 'POST'])
 def show_extracted():
