@@ -12,7 +12,7 @@ Extracting
 from files in connected external drive.
 
 ### Requirements
-Tested on *Kali Linux 2021.3*.
+Recommended system: *Kali Linux 2021.3*.
 
 - Needed Python libraries listed in *requirements.txt* file.
 
