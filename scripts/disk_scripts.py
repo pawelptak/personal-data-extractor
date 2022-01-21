@@ -4,7 +4,7 @@ import time
 import uuid
 import json
 from datetime import datetime
-from settings_development import sudoPassword
+from settings import sudoPassword
 import pandas as pd
 from fpdf import FPDF
 import hashlib
